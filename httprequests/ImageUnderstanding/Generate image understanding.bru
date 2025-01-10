@@ -1,0 +1,15 @@
+meta {
+  name: Generate image understanding
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/api/v1/image
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  image: @file(C:\Users\pwt\Documents\Tmp\FCAC514C-F4B1-4B99-AA4C-F0E8945F85D0.webp)
+}

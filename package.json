@@ -1,0 +1,20 @@
+{
+  "name": "documentprocessing",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run index.ts --hot"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.0.14",
+    "ai": "^4.0.31",
+    "hono": "^4.6.16",
+    "zod": "^3.24.1"
+  }
+}
