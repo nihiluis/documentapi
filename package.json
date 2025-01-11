@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun run index.ts --hot"
+    "dev": "bun run index.ts --hot",
+    "openapi-generate": "npx openapi-typescript openapi/jobengine.yaml -o openapi/jobengine.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -13,8 +14,10 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^1.0.14",
+    "@hono/zod-openapi": "^0.18.3",
     "ai": "^4.0.31",
     "hono": "^4.6.16",
+    "openapi-fetch": "^0.13.4",
     "zod": "^3.24.1"
   }
 }

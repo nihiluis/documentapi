@@ -1,30 +1,18 @@
-import { Hono } from "hono"
 import { logger } from "hono/logger"
-import { generateImageUnderstanding } from "./imageunderstanding"
-import { createGoogleModel } from "./imageunderstanding/google"
+import { OpenAPIHono } from "@hono/zod-openapi"
+import { registerRoutes } from "./api/registerRoutes"
 
-const BASE_PATH = "/api/v1"
-
-const googleGenAiWrapper = createGoogleModel()
-
-const app = new Hono()
+const app = new OpenAPIHono()
 app.use(logger())
 
-app.get("/", c => {
-  return c.text("OK")
-})
+registerRoutes(app)
 
-app.post(`${BASE_PATH}/image`, async c => {
-  const formData = await c.req.formData()
-  const imageFile = formData.get("image")
-
-  if (!imageFile || !(imageFile instanceof File)) {
-    return c.json({ error: "No image file provided" }, 400)
-  }
-
-  const image = await imageFile.arrayBuffer()
-  const result = await generateImageUnderstanding(image, googleGenAiWrapper)
-  return c.json({ result })
+app.doc("/doc", {
+  openapi: "3.0.0",
+  info: {
+    version: "1.0.0",
+    title: "My API",
+  },
 })
 
 export default {
