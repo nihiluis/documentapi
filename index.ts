@@ -1,9 +1,15 @@
 import { logger } from "hono/logger"
 import { OpenAPIHono } from "@hono/zod-openapi"
 import { registerRoutes } from "./api/registerRoutes"
+import "dotenv/config"
+import { createDatabase } from "./db"
+import { ImageDocumentService } from "./service/document/image"
 
 const app = new OpenAPIHono()
 app.use(logger())
+
+const db = createDatabase()
+export const imageDocumentService = new ImageDocumentService(db)
 
 registerRoutes(app)
 
