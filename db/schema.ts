@@ -9,7 +9,7 @@ export const documentTable = pgTable("documents", {
 export const imagesTable = pgTable("images", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   documentId: integer().references(() => documentTable.id),
-  url: text(),
+  imageStoredFileId: text(),
   createdAt: timestamp().defaultNow(),
   updatedAt: timestamp().defaultNow(),
 })

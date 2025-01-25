@@ -1,0 +1,87 @@
+---
+openapi: 3.1.0
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+          format: int32
+    FileUploadResponse:
+      type: object
+      properties:
+        storedFilename:
+          type: string
+        originalFilename:
+          type: string
+        contentType:
+          type: string
+        size:
+          type: integer
+          format: int64
+    PresignedUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+        objectName:
+          type: string
+paths:
+  /api/v1/file/download/{objectName}:
+    get:
+      parameters:
+      - name: objectName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successfully generated presigned URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignedUrlResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      summary: Get Presigned Url
+      tags:
+      - Remote Stored File Resource
+  /api/v1/file/upload:
+    post:
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+        required: true
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileUploadResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      summary: Upload File
+      tags:
+      - Remote Stored File Resource
+info:
+  title: filestore API
+  version: 1.0.0-SNAPSHOT

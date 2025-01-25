@@ -1,7 +1,17 @@
 import { jobEngineClient } from "@/openapi/client"
 import { JOB_TYPE } from "@/constants"
 
-export async function createJob(payload: Record<string, any>) {
+interface JobService {
+  createJob(payload: Record<string, any>): Promise<string>
+}
+
+export default function newJobService(): JobService {
+  return {
+    createJob,
+  }
+}
+
+async function createJob(payload: Record<string, any>) {
   const job = {
     payload,
     jobType: JOB_TYPE,
@@ -18,6 +28,5 @@ export async function createJob(payload: Record<string, any>) {
     throw new Error("Failed to create job")
   }
 
-  return data.job.ID
+  return data.job.id
 }
-

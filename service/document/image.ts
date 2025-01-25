@@ -1,13 +1,26 @@
 import { documentTable, imagesTable } from "@/db/schema"
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js"
 
-export class ImageDocumentService {
+interface ImageDocument {
+  documentId: number
+  imageId: number
+  imageStoredFileId: string
+}
+
+interface ImageDocumentService {
+  createImageDocument(imageStoredFileId: string): Promise<ImageDocument>
+}
+
+export default function newImageDocumentService(
+  db: PostgresJsDatabase
+): ImageDocumentService {
+  return new ImageDocumentServiceImpl(db)
+}
+
+export class ImageDocumentServiceImpl {
   constructor(private db: PostgresJsDatabase) {}
 
-  async createImageDocument(): Promise<{
-    documentId: number
-    imageId: number
-  }> {
+  async createImageDocument(imageStoredFileId: string): Promise<ImageDocument> {
     const document = await this.db.insert(documentTable).values({}).returning()
 
     const documentId = document[0].id
@@ -16,11 +29,12 @@ export class ImageDocumentService {
       .insert(imagesTable)
       .values({
         documentId,
+        imageStoredFileId,
       })
       .returning()
 
     const imageId = image[0].id
 
-    return { documentId, imageId }
+    return { documentId, imageId, imageStoredFileId }
   }
 }

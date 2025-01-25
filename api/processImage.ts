@@ -2,8 +2,8 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi"
 import { generateImageUnderstanding } from "../imageunderstanding"
 import { createGoogleModel } from "@/imageunderstanding/google"
 import { BASE_PATH } from "@/constants"
-import { createJob } from "@/service/job"
 import { imageDocumentService } from "@/index"
+import { fileStoreService, jobService } from "@/index"
 
 const googleGenAiWrapper = createGoogleModel()
 
@@ -50,10 +50,12 @@ export function registerProcessImageRoute(app: OpenAPIHono) {
       return c.json({ error: "No image file provided" }, 400)
     }
 
-    const { imageId } =
-      await imageDocumentService.createImageDocument()
+    const imageFileId = await fileStoreService.uploadImage(imageFile)
 
-    const jobId = await createJob({ imageId })
+    const { imageId } =
+      await imageDocumentService.createImageDocument(imageFileId)
+
+    const jobId = await jobService.createJob({ imageId })
 
     const image = await imageFile.arrayBuffer()
     generateImageUnderstanding(image, googleGenAiWrapper)

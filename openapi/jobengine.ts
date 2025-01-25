@@ -132,7 +132,7 @@ export interface components {
              */
             readonly $schema?: string;
             /** @description The created job */
-            job: components["schemas"]["Job"];
+            job: components["schemas"]["JobOutput"];
         };
         ErrorDetail: {
             /** @description Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id' */
@@ -248,6 +248,20 @@ export interface components {
             UpdatedAt: components["schemas"]["Timestamptz"];
             /** Format: int32 */
             Version: number;
+        };
+        JobOutput: {
+            /** @description The creation time of the job */
+            createdAt: string;
+            /** @description The ID of the job */
+            id: string;
+            /** @description The type of the job */
+            jobType: string;
+            /** @description The payload of the job */
+            payload: string;
+            /** @description The result of the job */
+            result: string;
+            /** @description The status of the job */
+            status: string;
         };
         PingOutputBody: {
             /**

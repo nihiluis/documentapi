@@ -3,13 +3,17 @@ import { OpenAPIHono } from "@hono/zod-openapi"
 import { registerRoutes } from "./api/registerRoutes"
 import "dotenv/config"
 import { createDatabase } from "./db"
-import { ImageDocumentService } from "./service/document/image"
+import newImageDocumentService from "./service/document/image"
+import newFileStoreService from "./service/filestore"
+import newJobService from "./service/job"
 
 const app = new OpenAPIHono()
 app.use(logger())
 
 const db = createDatabase()
-export const imageDocumentService = new ImageDocumentService(db)
+export const imageDocumentService = newImageDocumentService(db)
+export const fileStoreService = newFileStoreService()
+export const jobService = newJobService()
 
 registerRoutes(app)
 
