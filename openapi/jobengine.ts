@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish a job
+         * @description Finish a job
+         */
+        post: operations["finish-job"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/jobs/{id}": {
         parameters: {
             query?: never;
@@ -38,26 +58,6 @@ export interface paths {
         get: operations["get-job"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/jobs/{id}/finish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Finish a job
-         * @description Finish a job
-         */
-        post: operations["finish-job"];
         delete?: never;
         options?: never;
         head?: never;
@@ -190,6 +190,8 @@ export interface components {
             readonly $schema?: string;
             /** @description The ID of the job that was finished */
             jobId: string;
+            /** @description The message of the job */
+            message: string;
             /** @description The result payload of the job */
             result: {
                 [key: string]: unknown;
@@ -218,7 +220,7 @@ export interface components {
              */
             readonly $schema?: string;
             /** @description The job */
-            job: components["schemas"]["Job"];
+            job: components["schemas"]["JobOutput"];
         };
         GetJobsOutputBody: {
             /**
@@ -228,26 +230,7 @@ export interface components {
              */
             readonly $schema?: string;
             /** @description The jobs */
-            jobs: components["schemas"]["Job"][] | null;
-        };
-        Job: {
-            CompletedAt: components["schemas"]["Timestamptz"];
-            CreatedAt: components["schemas"]["Timestamptz"];
-            CreatedBy: components["schemas"]["Text"];
-            ID: components["schemas"]["UUID"];
-            JobType: string;
-            LockedBy: components["schemas"]["Text"];
-            /** Format: base64 */
-            Payload: string;
-            /** Format: base64 */
-            Result: string;
-            /** Format: int32 */
-            RetryCount: number;
-            StartedAt: components["schemas"]["Timestamptz"];
-            Status: string;
-            UpdatedAt: components["schemas"]["Timestamptz"];
-            /** Format: int32 */
-            Version: number;
+            jobs: components["schemas"]["JobOutput"][] | null;
         };
         JobOutput: {
             /** @description The creation time of the job */
@@ -256,6 +239,8 @@ export interface components {
             id: string;
             /** @description The type of the job */
             jobType: string;
+            /** @description The message of the job */
+            outMessage: string;
             /** @description The payload of the job */
             payload: string;
             /** @description The result of the job */
@@ -275,22 +260,6 @@ export interface components {
              * @example OK
              */
             message: string;
-        };
-        Text: {
-            String: string;
-            Valid: boolean;
-        };
-        Timestamptz: {
-            /** Format: int32 */
-            InfinityModifier: number;
-            /** Format: date-time */
-            Time: string;
-            Valid: boolean;
-        };
-        UUID: {
-            /** Format: base64 */
-            Bytes: string;
-            Valid: boolean;
         };
     };
     responses: never;
@@ -334,38 +303,6 @@ export interface operations {
             };
         };
     };
-    "get-job": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the job to get */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GetJobOutputBody"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
     "finish-job": {
         parameters: {
             query?: never;
@@ -386,6 +323,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FinishJobOutputBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "get-job": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the job to get */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetJobOutputBody"];
                 };
             };
             /** @description Error */

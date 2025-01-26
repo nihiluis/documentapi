@@ -3,14 +3,14 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun run index.ts --hot",
+    "dev": "bun run --hot index.ts",
     "openapi-generate": "npx openapi-typescript openapi/jobengine.yaml -o openapi/jobengine.ts && bun run openapi-transform",
     "openapi-transform": "bun run openapi/transform.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.30.1",
+    "drizzle-kit": "^0.30.2",
     "openapi-typescript": "^7.6.0"
   },
   "peerDependencies": {
@@ -20,11 +20,13 @@
     "@ai-sdk/google": "^1.0.14",
     "@hono/zod-openapi": "^0.18.3",
     "ai": "^4.0.31",
+    "await-protect": "1.0.18",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",
     "hono": "^4.6.16",
     "openapi-fetch": "^0.13.4",
     "pg": "^8.13.1",
+    "pino": "^9.6.0",
     "zod": "^3.24.1"
   }
 }

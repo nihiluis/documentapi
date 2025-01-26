@@ -3,9 +3,9 @@ import { OpenAPIHono } from "@hono/zod-openapi"
 import { registerRoutes } from "./api/registerRoutes"
 import "dotenv/config"
 import { createDatabase } from "./db"
-import newImageDocumentService from "./service/document/image"
-import newFileStoreService from "./service/filestore"
-import newJobService from "./service/job"
+import newImageDocumentService from "./lib/document/image"
+import newFileStoreService from "./lib/filestore"
+import newJobService from "./lib/job"
 
 const app = new OpenAPIHono()
 app.use(logger())

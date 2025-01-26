@@ -1,3 +1,4 @@
+import { logger } from "@/lib/pino"
 import { filestoreClient } from "@/openapi/client"
 
 interface FileStoreService {
@@ -23,7 +24,8 @@ async function uploadImage(image: File): Promise<string> {
   })
 
   if (error) {
-    throw new Error("Failed to upload image")
+    logger.error({ ...error }, "upload image request to filestore failed")
+    throw error
   }
 
   if (!data.storedFilename) {
