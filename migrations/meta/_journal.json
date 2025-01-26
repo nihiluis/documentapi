@@ -8,6 +8,27 @@
       "when": 1737893923715,
       "tag": "0000_busy_wong",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1737929041957,
+      "tag": "0001_deep_killer_shrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1737929318067,
+      "tag": "0002_broken_ezekiel",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1737930890822,
+      "tag": "0003_tough_anthem",
+      "breakpoints": true
     }
   ]
 }

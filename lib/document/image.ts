@@ -1,4 +1,11 @@
-import { documentTable, imagesTable } from "@/db/schema"
+import {
+  documentTable,
+  imagesTable,
+  imageTextTable,
+  type Image,
+  type ImageText,
+} from "@/db/schema"
+import { eq } from "drizzle-orm"
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js"
 
 interface ImageDocument {
@@ -8,7 +15,15 @@ interface ImageDocument {
 }
 
 interface ImageDocumentService {
-  createImageDocument(imageStoredFileId: string): Promise<ImageDocument>
+  createImage(imageStoredFileId: string): Promise<ImageDocument>
+  createImageText(imageId: number, jobId: string): Promise<ImageText>
+  updateImageText(
+    imageId: number,
+    textData: unknown,
+    formattedText: string
+  ): Promise<ImageText>
+  getImage(imageId: number): Promise<Image | null>
+  getImageText(imageId: number): Promise<ImageText | null>
 }
 
 export default function newImageDocumentService(
@@ -20,7 +35,7 @@ export default function newImageDocumentService(
 export class ImageDocumentServiceImpl {
   constructor(private db: PostgresJsDatabase) {}
 
-  async createImageDocument(imageStoredFileId: string): Promise<ImageDocument> {
+  async createImage(imageStoredFileId: string): Promise<ImageDocument> {
     const document = await this.db.insert(documentTable).values({}).returning()
 
     const documentId = document[0].id
@@ -36,5 +51,52 @@ export class ImageDocumentServiceImpl {
     const imageId = image[0].id
 
     return { documentId, imageId, imageStoredFileId }
+  }
+
+  async createImageText(imageId: number, jobId: string): Promise<ImageText> {
+    const imageText = await this.db
+      .insert(imageTextTable)
+      .values({ imageId, jobId })
+      .returning()
+    return imageText[0]
+  }
+
+  async updateImageText(
+    imageId: number,
+    textData: unknown
+  ): Promise<ImageText> {
+    const imageTexts = await this.db
+      .update(imageTextTable)
+      .set({ text: textData })
+      .where(eq(imageTextTable.imageId, imageId))
+      .returning()
+
+    return imageTexts[0]
+  }
+
+  async getImage(imageId: number): Promise<Image | null> {
+    const images = await this.db
+      .select()
+      .from(imagesTable)
+      .where(eq(imagesTable.id, imageId))
+
+    if (images.length === 0) {
+      return null
+    }
+
+    return images[0]
+  }
+
+  async getImageText(imageId: number): Promise<ImageText | null> {
+    const imageTexts = await this.db
+      .select()
+      .from(imageTextTable)
+      .where(eq(imageTextTable.imageId, imageId))
+
+    if (imageTexts.length === 0) {
+      return null
+    }
+
+    return imageTexts[0]
   }
 }
