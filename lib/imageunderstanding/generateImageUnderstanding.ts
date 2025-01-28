@@ -4,10 +4,15 @@ import { imageToText } from "./imageToText"
 import { protect } from "await-protect"
 import { logger } from "@/lib/pino"
 
+export type ImageUnderstandingResult = {
+  jobId: string
+  imageId: number
+}
+
 export default async function generateImageUnderstanding(
   imageFile: File,
   model: LanguageModelV1
-): Promise<{ jobId: string }> {
+): Promise<ImageUnderstandingResult> {
   const [imageFileId, err] = await protect(
     fileStoreService.uploadImage(imageFile)
   )
@@ -41,8 +46,14 @@ export default async function generateImageUnderstanding(
   }
 
   handleImageToTextJob(imageDocument.imageId, jobId, imageFile, model)
-
-  return { jobId }
+  logger.info(
+    {
+      jobId,
+      imageId: imageDocument.imageId,
+    },
+    "Image understanding job created"
+  )
+  return { jobId, imageId: imageDocument.imageId }
 }
 
 async function handleImageToTextJob(
@@ -57,12 +68,14 @@ async function handleImageToTextJob(
     imageDocumentService.createImageText(imageId, jobId)
   )
   if (err3) {
+    logger.error({ error: err3 }, "Failed to create image text")
     jobService.setJobError(jobId, err3.message)
     return
   }
 
   const [imageUnderstanding, err4] = await protect(imageToText(image, model))
   if (err4 || !imageUnderstanding) {
+    logger.error({ error: err4 }, "Failed to generate image text")
     jobService.setJobError(
       jobId,
       err4?.message || "imageToText result is empty"
@@ -70,14 +83,21 @@ async function handleImageToTextJob(
     return
   }
 
+  const { imageRepresentation, formattedText, tags, title, caption } =
+    imageUnderstanding
+
   const [__, err5] = await protect(
-    imageDocumentService.updateImageText(
-      imageId,
-      imageUnderstanding.imageRepresentation,
-      imageUnderstanding.formattedText
-    )
+    imageDocumentService.updateImageText(imageId, {
+      representation: imageRepresentation,
+      formattedText,
+      tags,
+      title,
+      caption,
+    })
   )
+
   if (err5) {
+    logger.error({ error: err5 }, "Failed to update image text")
     jobService.setJobError(jobId, err5.message)
     return
   }

@@ -7,6 +7,7 @@ const model = createGoogleModel()
 
 const ResponseSchema = z.object({
   jobId: z.string(),
+  imageId: z.number(),
 })
 
 export const processImageRoute = createRoute({
@@ -36,11 +37,17 @@ export const processImageRoute = createRoute({
       },
       description: "Retrieve the id for the image processing job",
     },
+    400: {
+      description: "Bad request",
+    },
+    500: {
+      description: "Server error",
+    },
   },
 })
 
 export function registerProcessImageRoute(app: OpenAPIHono) {
-  app.post(`${BASE_PATH}/image`, async c => {
+  app.openapi(processImageRoute, async c => {
     const formData = await c.req.formData()
     const imageFile = formData.get("image")
 
@@ -49,8 +56,11 @@ export function registerProcessImageRoute(app: OpenAPIHono) {
     }
 
     try {
-      const { jobId } = await generateImageUnderstanding(imageFile, model)
-      return c.json({ jobId })
+      const { jobId, imageId } = await generateImageUnderstanding(
+        imageFile,
+        model
+      )
+      return c.json({ jobId, imageId })
     } catch (error) {
       return c.json({ error: (error as Error).message }, 500)
     }

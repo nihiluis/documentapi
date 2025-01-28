@@ -14,14 +14,17 @@ interface ImageDocument {
   imageStoredFileId: string
 }
 
+export type EditableImageText = Partial<
+  Pick<
+    ImageText,
+    "jobId" | "representation" | "formattedText" | "title" | "caption" | "tags"
+  >
+>
+
 interface ImageDocumentService {
   createImage(imageStoredFileId: string): Promise<ImageDocument>
   createImageText(imageId: number, jobId: string): Promise<ImageText>
-  updateImageText(
-    imageId: number,
-    textData: unknown,
-    formattedText: string
-  ): Promise<ImageText>
+  updateImageText(imageId: number, data: EditableImageText): Promise<ImageText>
   getImage(imageId: number): Promise<Image | null>
   getImageText(imageId: number): Promise<ImageText | null>
 }
@@ -63,11 +66,11 @@ export class ImageDocumentServiceImpl {
 
   async updateImageText(
     imageId: number,
-    textData: unknown
+    data: EditableImageText
   ): Promise<ImageText> {
     const imageTexts = await this.db
       .update(imageTextTable)
-      .set({ text: textData })
+      .set(data)
       .where(eq(imageTextTable.imageId, imageId))
       .returning()
 

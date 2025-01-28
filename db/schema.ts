@@ -22,7 +22,11 @@ export const imageTextTable = pgTable("image_text", {
     .notNull()
     .references(() => imagesTable.id),
   jobId: text(),
-  text: jsonb(),
+  representation: jsonb(),
+  formattedText: text(),
+  title: text().notNull().default(""),
+  caption: text().notNull().default(""),
+  tags: text().array().notNull().default([]),
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp().notNull().defaultNow(),
 })

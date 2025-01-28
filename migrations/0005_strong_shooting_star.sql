@@ -1,0 +1,1 @@
+ALTER TABLE "image_text" RENAME COLUMN "text" TO "formattedText";
