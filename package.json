@@ -6,7 +6,8 @@
     "start": "bun run index.ts",
     "dev": "bun run --hot index.ts",
     "build": "bun build index.ts --outdir dist --target bun",
-    "test": "vitest",
+    "test:watch": "vitest",
+    "test": "vitest run",
     "openapi-generate": "npx openapi-typescript openapi/jobengine.yaml -o openapi/jobengine.ts && bun run openapi-transform",
     "openapi-transform": "bun run openapi/transform.ts"
   },
