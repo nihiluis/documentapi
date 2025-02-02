@@ -1,6 +1,7 @@
 import { BASE_PATH } from "@/constants"
-import { imageDocumentService, jobService } from ".."
-import { createRoute, z, type OpenAPIHono } from "@hono/zod-openapi"
+import { imageDocumentService } from ".."
+import { createRoute, z } from "@hono/zod-openapi"
+import type { AppRouteHandler } from "@/lib/types"
 
 const ResponseSchema = z.object({
   imageId: z.string(),
@@ -13,7 +14,7 @@ const ResponseSchema = z.object({
 
 export const getImageRoute = createRoute({
   method: "get",
-  path: `${BASE_PATH}/image/:imageId`,
+  path: `${BASE_PATH}/image/{imageId}`,
   request: {
     params: z.object({
       imageId: z.string(),
@@ -37,27 +38,27 @@ export const getImageRoute = createRoute({
   },
 })
 
-export function registerGetImageRoute(app: OpenAPIHono) {
-  app.openapi(getImageRoute, async c => {
-    const imageId = parseInt(c.req.param("imageId"))
-    if (isNaN(imageId)) {
-      return c.json({ error: "Invalid image ID" }, 400)
-    }
+export type GetImageRoute = typeof getImageRoute
 
-    const image = await imageDocumentService.getImage(imageId)
-    if (!image) {
-      return c.json({ error: "Image id not found" }, 404)
-    }
+export const getImageHandler: AppRouteHandler<GetImageRoute> = async c => {
+  const imageId = parseInt(c.req.param("imageId"))
+  if (isNaN(imageId)) {
+    return c.json({ error: "Invalid image ID" }, 400)
+  }
 
-    const imageText = await imageDocumentService.getImageText(imageId)
+  const image = await imageDocumentService.getImage(imageId)
+  if (!image) {
+    return c.json({ error: "Image id not found" }, 404)
+  }
 
-    return c.json({
-      imageId: image.id,
-      imageText: {
-        jobId: imageText?.jobId ?? null,
-        representation: imageText?.representation ?? null,
-        formattedText: imageText?.formattedText ?? null,
-      },
-    })
+  const imageText = await imageDocumentService.getImageText(imageId)
+
+  return c.json({
+    imageId: image.id,
+    imageText: {
+      jobId: imageText?.jobId ?? null,
+      representation: imageText?.representation ?? null,
+      formattedText: imageText?.formattedText ?? null,
+    },
   })
 }

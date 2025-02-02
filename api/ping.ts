@@ -1,4 +1,5 @@
 import { BASE_PATH } from "@/constants"
+import type { AppRouteHandler } from "@/lib/types"
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi"
 
 const ResponseSchema = z.object({
@@ -19,6 +20,12 @@ export const pingRoute = createRoute({
     },
   },
 })
+
+export type PingRoute = typeof pingRoute
+
+export const pingHandler: AppRouteHandler<PingRoute> = c => {
+  return c.json({ message: "OK" })
+}
 
 export function registerPingRoute(app: OpenAPIHono) {
   app.openapi(pingRoute, c => {

@@ -39,9 +39,9 @@ export class ImageDocumentServiceImpl {
   constructor(private db: PostgresJsDatabase) {}
 
   async createImage(imageStoredFileId: string): Promise<ImageDocument> {
-    const document = await this.db.insert(documentTable).values({}).returning()
+    const documents = await this.db.insert(documentTable).values({}).returning()
 
-    const documentId = document[0].id
+    const documentId = documents[0].id
 
     const image = await this.db
       .insert(imagesTable)

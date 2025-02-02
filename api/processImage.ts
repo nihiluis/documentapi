@@ -1,9 +1,8 @@
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi"
+import { createRoute, z } from "@hono/zod-openapi"
 import { generateImageUnderstanding } from "@/lib/imageunderstanding"
-import { createGoogleModel } from "@/lib/imageunderstanding/google"
 import { BASE_PATH } from "@/constants"
-
-const model = createGoogleModel()
+import type { AppRouteHandler } from "@/lib/types"
+import type { LanguageModelV1 } from "ai"
 
 const ResponseSchema = z.object({
   jobId: z.string(),
@@ -46,13 +45,16 @@ export const processImageRoute = createRoute({
   },
 })
 
-export function registerProcessImageRoute(app: OpenAPIHono) {
-  app.openapi(processImageRoute, async c => {
+export type ProcessImageRoute = typeof processImageRoute
+
+export const processImageHandler = (model: LanguageModelV1): AppRouteHandler<ProcessImageRoute> => {
+  return async c => {
     const formData = await c.req.formData()
     const imageFile = formData.get("image")
 
+    // Parsing is already done by Hono/Zod, so I expect this is practically dead code.
     if (!imageFile || !(imageFile instanceof File)) {
-      return c.json({ error: "No image file provided" }, 400)
+      return c.json({ message: "No image file provided" }, 400)
     }
 
     try {
@@ -62,7 +64,8 @@ export function registerProcessImageRoute(app: OpenAPIHono) {
       )
       return c.json({ jobId, imageId })
     } catch (error) {
-      return c.json({ error: (error as Error).message }, 500)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      return c.json({ message: errorMessage }, 500)
     }
-  })
+  }
 }
