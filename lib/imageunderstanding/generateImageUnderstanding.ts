@@ -10,6 +10,7 @@ export type ImageUnderstandingResult = {
 }
 
 export default async function generateImageUnderstanding(
+  documentId: number,
   imageFile: File,
   model: LanguageModelV1
 ): Promise<ImageUnderstandingResult> {
@@ -28,7 +29,7 @@ export default async function generateImageUnderstanding(
   }
 
   const [imageDocument, err2] = await protect(
-    imageDocumentService.createImage(imageFileId)
+    imageDocumentService.createImage(documentId, imageFileId)
   )
   if (!imageDocument) {
     logger.error({ error: err2 }, "Failed to create image document")

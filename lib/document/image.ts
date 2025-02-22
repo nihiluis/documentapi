@@ -22,7 +22,10 @@ export type EditableImageText = Partial<
 >
 
 interface ImageDocumentService {
-  createImage(imageStoredFileId: string): Promise<ImageDocument>
+  createImage(
+    documentId: number,
+    imageStoredFileId: string
+  ): Promise<ImageDocument>
   createImageText(imageId: number, jobId: string): Promise<ImageText>
   updateImageText(imageId: number, data: EditableImageText): Promise<ImageText>
   getImage(imageId: number): Promise<Image | null>
@@ -38,11 +41,10 @@ export default function newImageDocumentService(
 export class ImageDocumentServiceImpl {
   constructor(private db: PostgresJsDatabase) {}
 
-  async createImage(imageStoredFileId: string): Promise<ImageDocument> {
-    const documents = await this.db.insert(documentTable).values({}).returning()
-
-    const documentId = documents[0].id
-
+  async createImage(
+    documentId: number,
+    imageStoredFileId: string
+  ): Promise<ImageDocument> {
     const image = await this.db
       .insert(imagesTable)
       .values({

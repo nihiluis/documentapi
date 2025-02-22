@@ -5,6 +5,7 @@ import type { AppRouteHandler } from "@/lib/types"
 
 const ResponseSchema = z.object({
   imageId: z.string(),
+  documentId: z.string(),
   imageText: z.object({
     jobId: z.string().nullable(),
     representation: z.any().nullable(),
@@ -55,6 +56,7 @@ export const getImageHandler: AppRouteHandler<GetImageRoute> = async c => {
 
   return c.json({
     imageId: image.id,
+    documentId: image.documentId,
     imageText: {
       jobId: imageText?.jobId ?? null,
       representation: imageText?.representation ?? null,

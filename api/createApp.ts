@@ -6,6 +6,8 @@ import { getImageHandler } from "./getImage"
 import { processImageHandler, processImageRoute } from "./processImage"
 import { errorHandler, notFoundHandler } from "./utilHandlers"
 import type { LanguageModelV1 } from "ai"
+import { createEmptyDocumentHandler, createEmptyDocumentRoute } from "./createEmptyDocument"
+import { newDocumentService } from "@/lib/document"
 
 export default function createApp() {
   const app = new OpenAPIHono()
@@ -19,11 +21,15 @@ export type RouteConfig = {
   model: LanguageModelV1
 }
 
-export function applyRoutes(app: OpenAPIHono, { model}: RouteConfig) {
+export function applyRoutes(app: OpenAPIHono, { model }: RouteConfig) {
   return app
     .openapi(pingRoute, pingHandler)
     .openapi(processImageRoute, processImageHandler(model))
     .openapi(getImageRoute, getImageHandler)
+    .openapi(
+      createEmptyDocumentRoute,
+      createEmptyDocumentHandler()
+    )
 }
 
 export type AppRoutes = typeof applyRoutes

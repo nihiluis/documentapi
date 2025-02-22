@@ -5,6 +5,7 @@ import newFileStoreService from "./lib/filestore"
 import newJobService from "./lib/job"
 import createApp, { applyRoutes } from "./api/createApp"
 import { createGoogleModel } from "./lib/imageunderstanding/google"
+import { newDocumentService } from "./lib/document/index"
 
 const app = createApp()
 applyRoutes(app, { model: createGoogleModel() })
@@ -13,6 +14,7 @@ const db = createDatabase()
 export const imageDocumentService = newImageDocumentService(db)
 export const fileStoreService = newFileStoreService()
 export const jobService = newJobService()
+export const documentService = newDocumentService(db)
 
 app.doc("/doc", {
   openapi: "3.0.0",

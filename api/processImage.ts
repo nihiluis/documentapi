@@ -11,7 +11,7 @@ const ResponseSchema = z.object({
 
 export const processImageRoute = createRoute({
   method: "post",
-  path: `${BASE_PATH}/image`,
+  path: `${BASE_PATH}/document/:documentId/image`,
   request: {
     body: {
       content: {
@@ -47,24 +47,32 @@ export const processImageRoute = createRoute({
 
 export type ProcessImageRoute = typeof processImageRoute
 
-export const processImageHandler = (model: LanguageModelV1): AppRouteHandler<ProcessImageRoute> => {
+export const processImageHandler = (
+  model: LanguageModelV1
+): AppRouteHandler<ProcessImageRoute> => {
   return async c => {
+    const documentId = parseInt(c.req.param("documentId"))
+    if (isNaN(documentId)) {
+      return c.json({ message: "Invalid document ID" }, 400)
+    }
+
     const formData = await c.req.formData()
     const imageFile = formData.get("image")
 
-    // Parsing is already done by Hono/Zod, so I expect this is practically dead code.
     if (!imageFile || !(imageFile instanceof File)) {
       return c.json({ message: "No image file provided" }, 400)
     }
 
     try {
       const { jobId, imageId } = await generateImageUnderstanding(
+        documentId,
         imageFile,
         model
       )
       return c.json({ jobId, imageId })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error"
       return c.json({ message: errorMessage }, 500)
     }
   }

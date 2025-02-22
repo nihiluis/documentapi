@@ -26,6 +26,11 @@ docker build -t documentunderstanding .
 docker run -p 3000:3000 documentunderstanding
 ```
 
+```bash
+# Use packaged image
+docker pull ghcr.io/nihiluis/documentunderstanding:latest
+```
+
 ### Env variables
 ```
 DATABASE_URL=postgresql://user:password@localhost:5432/dbname
