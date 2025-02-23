@@ -68,10 +68,14 @@ describe("GET /api/v1/image/{imageId}", () => {
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
       imageId: 123,
+      documentId: 1,
       imageText: {
         jobId: null,
         representation: null,
         formattedText: null,
+        title: null,
+        caption: null,
+        tags: null,
       },
     })
   })
@@ -103,23 +107,27 @@ describe("GET /api/v1/image/{imageId}", () => {
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
       imageId: 123,
+      documentId: 1,
       imageText: {
         jobId: "job123",
         representation: { some: "data" },
         formattedText: "Sample text",
+        title: "",
+        caption: "",
+        tags: [],
       },
     })
   })
 })
 
-describe("POST /api/v1/image", () => {
+describe("POST /api/v1/document/:documentId/image", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it("should return 500 when no image is provided", async () => {
     const formData = new FormData()
-    const res = await app.request("/api/v1/image", {
+    const res = await app.request("/api/v1/document/123/image", {
       method: "POST",
       body: formData,
       headers: {
@@ -142,7 +150,7 @@ describe("POST /api/v1/image", () => {
     })
     formData.append("image", imageFile)
 
-    const res = await app.request("/api/v1/image", {
+    const res = await app.request("/api/v1/document/123/image", {
       method: "POST",
       body: formData,
     })
@@ -164,7 +172,7 @@ describe("POST /api/v1/image", () => {
     })
     formData.append("image", imageFile)
 
-    const res = await app.request("/api/v1/image", {
+    const res = await app.request("/api/v1/document/123/image", {
       method: "POST",
       body: formData,
     })
