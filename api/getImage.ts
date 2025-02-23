@@ -10,6 +10,9 @@ const ResponseSchema = z.object({
     jobId: z.string().nullable(),
     representation: z.any().nullable(),
     formattedText: z.string().nullable(),
+    caption: z.string().nullable(),
+    title: z.string().nullable(),
+    tags: z.array(z.string()).nullable(),
   }),
 })
 
@@ -59,8 +62,11 @@ export const getImageHandler: AppRouteHandler<GetImageRoute> = async c => {
     documentId: image.documentId,
     imageText: {
       jobId: imageText?.jobId ?? null,
+      caption: imageText?.caption ?? null,
+      title: imageText?.title ?? null,
       representation: imageText?.representation ?? null,
       formattedText: imageText?.formattedText ?? null,
+      tags: imageText?.tags ?? null,
     },
   })
 }
